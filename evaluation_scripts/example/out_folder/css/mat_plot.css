@@ -1,0 +1,26 @@
+.mat {
+	width: 800px;
+	height: 800px;
+	border: solid;
+    border-width: 1px;
+    border-color: rgba(15,15,15,0.4);
+	margin: 9px;
+	font-size: 14;
+	font-family: serif;
+}
+
+.mat-tip {
+	position: absolute;					
+    width: 250px;									
+    padding: 2px;				
+    font: 17px sans-serif;		
+    background: rgb(215,215,215);	
+    border: solid;
+    border-width: 2px;
+    border-color: rgb(155,155,155);		
+    border-radius: 8px;			
+    pointer-events: none;
+    opacity: 0;
+    visibility: hidden;
+    white-space: pre;	
+}

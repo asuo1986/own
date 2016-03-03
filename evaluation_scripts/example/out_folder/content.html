@@ -1,0 +1,225 @@
+<html>
+<head>
+	<script src="lib/d3.min.js" charset="utf-8"></script>
+	<script src="lib/mat_plot.js" charset="utf-8"></script>
+	<script src="lib/table_plot.js" charset="utf-8"></script>
+	<script src="lib/timeline_plot.js" charset="utf-8"></script>
+	<link rel="stylesheet" type="text/css" href="css/mat_plot.css">
+	<link rel="stylesheet" type="text/css" href="css/table_plot.css">
+	<link rel="stylesheet" type="text/css" href="css/timeline_plot.css">
+</head>
+<body>
+
+	<script>
+		var body = d3.select('body');
+
+    var temp_data = [{'avg': 0.5, 'med': 0.6, 'topq': 0.7, 'botq': 0.4, 'topw': 0.8, 'loww': 0}, 
+    {'avg': 0.5, 'med': 0.6, 'topq': 0.7, 'botq': 0.4, 'topw': 0.8, 'loww': 0}, 
+    {'avg': 0.4, 'med': 0.6, 'topq': 0.7, 'botq': 0.4, 'topw': 0.8, 'loww': 0}, 
+    {'avg': 0.04, 'med': 0.6, 'topq': 0.7, 'botq': 0.4, 'topw': 0.8, 'loww': 0}, 
+    {'avg': 0.6, 'med': 0.6, 'topq': 0.7, 'botq': 0.4, 'topw': 0.8, 'loww': 0}, 
+    {'avg': 0.1, 'med': 0.6, 'topq': 0.7, 'botq': 0.4, 'topw': 0.8, 'loww': 0}, 
+    {'avg': 0.9, 'med': 0.6, 'topq': 0.7, 'botq': 0.4, 'topw': 0.8, 'loww': 0}, 
+    {'avg': 0.5, 'med': 0.6, 'topq': 0.7, 'botq': 0.4, 'topw': 0.8, 'loww': 0}, 
+    {'avg': 0.4, 'med': 0.6, 'topq': 0.7, 'botq': 0.4, 'topw': 0.8, 'loww': 0}, 
+    {'avg': 0.5, 'med': 0.4, 'topq': 0.9, 'botq': 0.4, 'topw': 0.99, 'loww': 0.2}, 
+    {'avg': 0.6, 'med': 0.6, 'topq': 0.7, 'botq': 0.4, 'topw': 0.8, 'loww': 0}, 
+    {'avg': 0.5, 'med': 0.6, 'topq': 0.7, 'botq': 0.4, 'topw': 0.8, 'loww': 0}, 
+    {'avg': 0.5, 'med': 0.6, 'topq': 0.7, 'botq': 0.4, 'topw': 0.8, 'loww': 0},
+    {'avg': 0.6, 'med': 0.6, 'topq': 0.7, 'botq': 0.4, 'topw': 0.8, 'loww': 0}, 
+    {'avg': 0.66, 'med': 0.6, 'topq': 0.7, 'botq': 0.4, 'topw': 0.8, 'loww': 0}, 
+    {'avg': 0.666, 'med': 0.6, 'topq': 0.7, 'botq': 0.4, 'topw': 0.8, 'loww': 0}, 
+    {'avg': 0.9, 'med': 0.6, 'topq': 0.7, 'botq': 0.4, 'topw': 0.8, 'loww': 0}, 
+    {'avg': 0.9, 'med': 0.6, 'topq': 0.7, 'botq': 0.4, 'topw': 0.8, 'loww': 0}, 
+    {'avg': 0.9, 'med': 0.6, 'topq': 0.7, 'botq': 0.4, 'topw': 0.8, 'loww': 0}, 
+    {'avg': 0.9, 'med': 0.6, 'topq': 0.7, 'botq': 0.4, 'topw': 0.8, 'loww': 0}, 
+    {'avg': 0.9, 'med': 0.6, 'topq': 0.7, 'botq': 0.4, 'topw': 0.8, 'loww': 0}, 
+    {'avg': 0.9, 'med': 0.6, 'topq': 0.7, 'botq': 0.4, 'topw': 0.8, 'loww': 0}, 
+    {'avg': 0.9, 'med': 0.6, 'topq': 0.7, 'botq': 0.4, 'topw': 0.8, 'loww': 0}, 
+    {'avg': 0.9, 'med': 0.6, 'topq': 0.7, 'botq': 0.4, 'topw': 0.8, 'loww': 0}, 
+    {'avg': 0.9, 'med': 0.6, 'topq': 0.7, 'botq': 0.4, 'topw': 0.8, 'loww': 0}, 
+    {'avg': 0.9, 'med': 0.6, 'topq': 0.7, 'botq': 0.4, 'topw': 0.8, 'loww': 0}, 
+    {'avg': 0.9, 'med': 0.6, 'topq': 0.7, 'botq': 0.4, 'topw': 0.8, 'loww': 0}, 
+    {'avg': 0.9, 'med': 0.6, 'topq': 0.7, 'botq': 0.4, 'topw': 0.8, 'loww': 0}, 
+    {'avg': 0.9, 'med': 0.6, 'topq': 0.7, 'botq': 0.4, 'topw': 0.8, 'loww': 0}, 
+    {'avg': 0.9, 'med': 0.6, 'topq': 0.7, 'botq': 0.4, 'topw': 0.8, 'loww': 0}, 
+    {'avg': 0.9, 'med': 0.6, 'topq': 0.7, 'botq': 0.4, 'topw': 0.8, 'loww': 0}, 
+    {'avg': 0.9, 'med': 0.6, 'topq': 0.7, 'botq': 0.4, 'topw': 0.8, 'loww': 0}, 
+    {'avg': 0.9, 'med': 0.6, 'topq': 0.7, 'botq': 0.4, 'topw': 0.8, 'loww': 0}, 
+    {'avg': 0.9, 'med': 0.6, 'topq': 0.7, 'botq': 0.4, 'topw': 0.8, 'loww': 0}, 
+    {'avg': 0.9, 'med': 0.6, 'topq': 0.7, 'botq': 0.4, 'topw': 0.8, 'loww': 0}, 
+    {'avg': 0.9, 'med': 0.6, 'topq': 0.7, 'botq': 0.4, 'topw': 0.8, 'loww': 0}, 
+    {'avg': 0.9, 'med': 0.6, 'topq': 0.7, 'botq': 0.4, 'topw': 0.8, 'loww': 0}, 
+    {'avg': 0.9, 'med': 0.6, 'topq': 0.7, 'botq': 0.4, 'topw': 0.8, 'loww': 0}, 
+    {'avg': 0.9, 'med': 0.6, 'topq': 0.7, 'botq': 0.4, 'topw': 0.8, 'loww': 0}, 
+    {'avg': 0.9, 'med': 0.6, 'topq': 0.7, 'botq': 0.4, 'topw': 0.8, 'loww': 0}, 
+    {'avg': 0.9, 'med': 0.6, 'topq': 0.7, 'botq': 0.4, 'topw': 0.8, 'loww': 0}, 
+    {'avg': 0.9, 'med': 0.6, 'topq': 0.7, 'botq': 0.4, 'topw': 0.8, 'loww': 0}, 
+    {'avg': 0.9, 'med': 0.6, 'topq': 0.7, 'botq': 0.4, 'topw': 0.8, 'loww': 0}, 
+    {'avg': 0.9, 'med': 0.6, 'topq': 0.7, 'botq': 0.4, 'topw': 0.8, 'loww': 0}
+    ];
+
+    time_labels = [
+      '2016/01/13 12:30',
+      '2016/01/13 12:30',
+      '2016/01/13 12:30',
+      '2016/01/13 12:30',
+      '2016/01/13 12:30',
+      '2016/01/13 12:30',
+      '2016/01/13 12:30',
+      '2016/01/13 12:30',
+      '2016/01/13 12:30',
+      '2016/01/13 12:30',
+
+      '2016/01/13 12:30',
+      '2016/01/13 12:30',
+      '2016/01/13 12:30',
+      '2016/01/13 12:30',
+      '2016/01/13 12:30',
+      '2016/01/13 12:30',
+      '2016/01/13 12:30',
+      '2016/01/13 12:30',
+      '2016/01/13 12:30',
+      '2016/01/13 12:30',
+
+      '2016/01/13 12:30',
+      '2016/01/13 12:30',
+      '2016/01/13 12:30',
+      '2016/01/13 12:30',
+      '2016/01/13 12:30',
+      '2016/01/13 12:30',
+      '2016/01/13 12:30',
+      '2016/01/13 12:30',
+      '2016/01/13 12:30',
+      '2016/01/13 12:30',
+      '2016/01/13 12:30',
+      '2016/01/13 12:30',
+      '2016/01/13 12:30',
+      '2016/01/13 12:30',
+      '2016/01/13 12:30',
+      '2016/01/13 12:30',
+      '2016/01/13 12:30',
+      '2016/01/13 12:30',
+      '2016/01/13 12:30',
+      '2016/01/13 12:30',
+      '2016/01/13 12:30',
+      '2016/01/13 12:30',
+      '2016/01/13 12:30',
+    ];
+
+    brief_descriptions = [
+      'some brief description 1',
+      'some brief description 2',
+      'some brief description 3',
+      'some brief description 4',
+      'some brief description 5',
+      'some brief description 6',
+      'some brief description 7',
+      'some brief description 8',
+      'some brief description 9',
+      'some brief description 10',
+      
+      'some brief description 11',
+      'some brief description 12',
+      'some brief description 13',
+      'some brief description 14',
+      'some brief description 15',
+      'some brief description 16',
+      'some brief description 17',
+      'some brief description 18',
+      'some brief description 19',
+      'some brief description 20',
+      
+      'some brief description 21',
+      'some brief description 22',
+      'some brief description 23',
+      'some brief description 24',
+      'some brief description 25',
+      'some brief description 26',
+      'some brief description 27',
+      'some brief description 28',
+      'some brief description 29',
+      'some brief description 30',
+      
+      'some brief description 31',
+      'some brief description 32',
+      'some brief description 33',
+      'some brief description 34',
+      'some brief description 35',
+      'some brief description 36',
+      'some brief description 37',
+      'some brief description 38',
+      'some brief description 39',
+      'some brief description 40',
+      
+      'some brief description 41',
+      'some brief description 42',
+      'some brief description 43',
+    ];
+
+    details_links = [
+      "details.html?dataset=dhp&ht=left&accesorise=watch",
+       "details.html?some_arg2",
+       "details.html?some_arg3",
+       "details.html?some_arg4",
+       "details.html?some_arg5",
+       "details.html",
+       "details.html",
+       "details.html",
+       "details.html",
+       "details.html",
+      
+       "details.html",
+       "details.html",
+       "details.html",
+       "details.html",
+       "details.html",
+       "details.html",
+       "details.html",
+       "details.html",
+       "details.html",
+       "details.html",
+      
+       "details.html",
+       "details.html",
+       "details.html",
+       "details.html",
+       "details.html",
+       "details.html",
+       "details.html",
+       "details.html",
+       "details.html",
+       "details.html",
+      
+       "details.html",
+       "details.html",
+       "details.html",
+       "details.html",
+       "details.html",
+       "details.html",
+       "details.html",
+       "details.html",
+       "details.html",
+       "details.html",
+      
+       "details.html",
+       "details.html",
+       "details.html",
+      
+    ];
+
+		timeline_plot.plot(temp_data, body, time_labels, 'Weighted average accuracy', brief_descriptions, details_links);
+		table_plot.plot([[, 'Data'], ['first', 'value_first'], ['second', 'value_second']], body);
+		mat_plot.plot([[10, 23, 10, 3],[10,123, 3, 3], [0,0,132, 4], [10,0,10,50]],['open_hand/open_hand', 'open_hand/open_hand', 'open_hand', 'l_up'], ['open_hand/open_hand','open_hand/open_hand', 'open_hand', 'l_up'], body );
+		mat_plot.plot([[10, 23, 10, 3 , 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,0,0,0],[10,123, 3, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,0,0,0], [0,0,132, 4, 0 ,0 ,0,0 , 0, 0, 0, 0, 0, 0, 0, 0,0,0,0], [10,0,10,50, 0,0,0, 0, 0, 0, 0, 0, 0, 0, 0, 0,0,0,0],[0,0,0,0,0,0,0,0, 0, 0, 0, 0, 0, 0, 0, 0,0,0,0],[0,0,0,0,0,0,0,0, 0, 0, 0, 0, 0, 0, 0, 0,0,0,0],[0,0,0,0,0,0,0,0, 0, 0, 0, 0, 0, 0, 0, 0,0,0,0],[0,0,0,0,0,0,0,0, 0, 0, 0, 0, 0, 0, 0, 0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0, 0, 0, 0, 0, 0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0, 0, 0, 0, 0, 0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0, 0, 0, 0, 0, 0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0, 0, 0, 0, 0, 0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0, 0, 0, 0, 0, 0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0, 0, 0, 0, 0, 0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0, 0, 0, 0, 0, 0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0, 0, 0, 0, 0, 0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0, 0, 0, 0, 0, 0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0, 0, 0, 0, 0, 0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0, 0, 0, 0, 0, 0,0,0,0]],['open_hand/open_hand', 'open_hand/open_hand', 'open_hand', 'l_up', 'fist', 'fist', 'fist', 'fist', 'fist', 'fist', 'fist', 'fist', 'fist', 'fist', 'fist', 'fist', 'fist', 'fist', 'fist'], ['open_hand/open_hand','open_hand/open_hand', 'open_hand', 'l_up', 'fist', 'fist', 'fist', 'fist', 'fist', 'fist', 'fist', 'fist', 'fist', 'fist', 'fist', 'fist', 'fist', 'fist', 'fist'], body );
+		mat_plot.plot([[10, 23, 10, 3],[10,123, 3, 3], [0,0,132, 4], [10,0,10,50]],['open_hand/open_hand', 'open_hand/open_hand', 'open_hand', 'l_up'], ['open_hand/open_hand','open_hand/open_hand', 'open_hand', 'l_up'], body );
+	</script>
+
+	<table id="hardcoded table" class="details-table">
+		<tr><td></td><td>Data</td> </tr>
+		<tr><td>first</td><td>first_value</td> </tr>
+		<tr><td>second</td><td>second_value</td> </tr>
+	</table>
+<body>
+
+</html>

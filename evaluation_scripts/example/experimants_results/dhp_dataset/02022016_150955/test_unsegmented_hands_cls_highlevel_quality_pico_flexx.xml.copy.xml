@@ -1,0 +1,164 @@
+<root>
+<!--
+@AUTHOR: Itseez
+@DATE: Dec 7, 2015
+@PURPOSE: config for quality evaluation of gesture recognition using PMD Pico Flexx.
+-->
+
+<include file="${SCRIPT_START}/test_unsegmented_hands_cls_highlevel_subgraph_pico_flexx.xml"/>
+
+<mlx>
+
+  <nodes>
+   <create instance="runner" type="NodeConfusionMatrixGenerator" >
+     <set param="image_file_names_path" value="${IMAGE_FILE_NAMES_PATH}" />
+     <set param="confusion_matrix_output_file_path" value="${CONFUSION_MATRIX_OUTPUT_FILE_PATH}" />
+     <set param="regression_metric_output_file_path" value="${REGRESSION_METRIC_OUTPUT_FILE_PATH}" />
+     <set param="expected_labels_file_path" value="${EXPECTED_LABELS_FILE_PATH}" />
+     <set param="predicted_labels_file_path" value="${PREDICTED_LABELS_FILE_PATH}" />
+     <set param="estimated_histograms_file_path" value="${ESTIMATED_HISTOGRAMS_FILE_PATH}" />
+     <set param="expected_joints_file_path" value="${EXPECTED_JOINTS_FILE_PATH}" />
+     <set param="predicted_joints_file_path" value="${PREDICTED_JOINTS_FILE_PATH}" />
+     <set param="expected_centers_file_path"   value="${EXPECTED_CENTERS_FILE_PATH}" />
+     <set param="predicted_centers_file_path" value="${PREDICTED_CENTERS_FILE_PATH}" />
+     <set param="translations_file_path" value="${TRANSLATIONS_FILE_PATH}" />
+     <set param="_frequency" value="1000" />
+     <set param="frame_skip" value="1" />
+     <set param="textile_format_enabled" value="0" />
+     <set param="use_text_labels" value="1" />
+   </create>
+
+    <!--<create instance="multiscreen" type="NodeCvImshowMulti">
+      <set param="count" value="2" />
+      <set param="_period" value="30" />
+      <set param="winX1" value="80" />
+      <set param="winX2" value="320" />
+      <set param="winY1" value="0" />
+      <set param="winY2" value="0" />
+      <set param="scale1" value="2" />
+      <set param="scale2" value="2" />
+    </create>
+
+    <create instance="viz" type="NodeHandSkeletonVisualizer" />-->
+
+  </nodes>
+
+  <nets>
+    <co pub="runner.depth_out"              sub="mask_depth.depth" />
+    <co pub="gesture_kpts.gesture_multi_out"    sub="runner.gesture_multi_in" />
+    <!--<co pub="gesture_kpts.gesture_multi_out"    sub="viz.gesture_multi_in" />
+    <co pub="cls_higlevel.display_img"      sub="multiscreen.img_in1" />
+    <co pub="mask_depth.masked_depth"       sub="multiscreen.img_in2" />-->
+  </nets>
+
+</mlx>
+
+<mlx>
+<!--
+@AUTHOR: Itseez
+@DATE: Dec 7, 2015
+@PURPOSE: Subgraph for gesture recognition using PMD Pico Flexx.
+
+NOTE: Don't forget to update mlx_exec/config/subgraphs/gesture/pipeline_depth_pmd_pico_flexx_fastfinger_libfinger.xml
+      if you change this graph!
+-->
+  <resources>
+    <library file="libmlx_common.so" />
+    <library file="libmlx_image.so" />
+    <library file="libmlx_itseez_gestures.so" />
+    <library file="libmlx_drivers.so" />
+  </resources>
+
+  <globals>
+    <set param="_control_port" value="162688"/>
+    <set param="calib" value="${SCRIPT_START}/ml_helmet.yaml"/>
+    <set param="depth_camera_id" value="depth_pmd_pico_flexx" />
+  </globals>
+
+  <nodes>
+    <create instance="mask_depth" type="NodeSimpleHandSegmentation" >
+      <set param="dilate_num" value = "0" />
+      <set param="erode_num" value = "0" />
+      <set param="min_depth" value = "50" />
+      <set param="max_depth" value = "850" />
+    </create>
+
+    <create instance="hand_determinator" type="NodeHandsSegmentation">
+      <set param="model_segm_hc" value="${SCRIPT_START}/0098_0088_hand_center_all_sleeve_flexx_b002_inf_skel_100kb.binx" />
+      <set param="extractor_type" value="dbscan_based" />
+      <set param="model_segm_lr" value="${SCRIPT_START}/lr_compressed100k_24trees_refined.binx" />
+      <set param="use_tracking" value="1" />
+      <set param="use_watches_handler" value="1" />
+      <set param="lr_conf_thr" value="0.05" />
+    </create>
+
+    <create  instance="normalization" type="NodeCenterNormalization" >
+      <set param="z_range_min" value="0.2" />
+      <set param="z_range_max" value="0.5" />
+    </create>
+
+    <create instance="cls_highlevel" type="NodeClsHighlevel">
+      <set param="model_path"     value="${SCRIPT_START}/model_compressed100k_64trees_refined_2.binx" />
+      <set param="labels_path"    value="${SCRIPT_START}/model_compressed100k_64trees_refined_2.binx.labels" />
+      <set param="use_skeleton_only" value="1" />
+    </create>
+
+    <create  instance="gesture_kpts" type="NodeGestureKeypoints" >
+      <set param="convert_to_helmet_coord" value="0" />
+      <set param="model_folder" value="${SCRIPT_START}" />
+      <set param="config" value="${SCRIPT_START}/new_keypoint_models_config_compressed.yaml" />
+    </create>
+
+    <create  instance="smoother" type="NodeTemporalSmoother" >
+      <set param="size" value="3" />
+    </create>
+
+    <create  instance="kalman_smoother" type="NodeKalmanFiltering" >
+        <set param="hand_motion_variance" value="0.05" />
+        <set param="prediction_variance" value="1.5" />
+        <set param="initial_error_variance" value="5." />
+
+    </create>
+    <create  instance="kalman_smoother2" type="NodeKalmanFiltering" >
+        <set param="hand_motion_variance" value="0.05" />
+        <set param="prediction_variance" value="1.5" />
+        <set param="initial_error_variance" value="5." />
+    </create>
+
+    <create instance="csdk_dispatcher" type="NodeDispatchGestureToCSDK" >
+      <!-- Allows backward compatibility with old Content SDK releases (0.5 & before).
+           Set true for use with new SDKs, false for old ones. -->
+      <set param="always_send_keypoints" value="false" />
+      <set param="retranslate_dynamic_pinch_point" value="true" />
+    </create>
+
+    <create  instance="predictive_position" type="NodePredictivePosition" >
+        <set param="nframes" value="2" />
+        <set param="hand_motion_variance" value="0.25" />
+        <set param="prediction_variance" value="0.25" />
+        <set param="initial_error_variance" value="5." />
+    </create>
+
+    <create  instance="conversion" type="NodeCoordinateConversion" >
+        <set param="convert_center" value="1" />
+        <set param="convert_keypoints" value="1" />
+    </create>
+
+  </nodes>
+
+  <nets>
+    <co pub="mask_depth.masked_depth"       sub="hand_determinator.depth" />
+    <co pub="hand_determinator.gesture_multi_out"  sub="cls_highlevel.gesture_multi_in" />
+    <co pub="cls_highlevel.gesture_multi_out"     sub="smoother.gesture_multi_in" />
+    <co pub="smoother.gesture_multi_out"         sub="gesture_kpts.gesture_multi_in" />
+    <co pub="gesture_kpts.gesture_multi_out"     sub="kalman_smoother.gesture_multi_in" />
+    <co pub="kalman_smoother.gesture_multi_out"  sub="predictive_position.gesture_multi_in" />
+    <co pub="predictive_position.gesture_multi_out" sub="kalman_smoother2.gesture_multi_in" />
+    <co pub="kalman_smoother2.gesture_multi_out"  sub="conversion.gesture_multi_in" />
+    <co pub="conversion.gesture_multi_out"      sub="normalization.gesture_multi_in" />
+    <co pub="normalization.gesture_multi_out"    sub="csdk_dispatcher.gesture_multi_in" />
+  </nets>
+
+</mlx>
+
+</root>

@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>classifier errors</title>
+
+<script src="d3.min.js" charset="utf-8"></script>
+<script type="text/javascript">
+function ShowHide(buttonid, elementid) {
+    var element = document.getElementById(elementid);
+    var button = document.getElementById(buttonid);
+    if (element.style.display == "none") {
+        element.style.display = "";        button.style.visibility = "hidden"
+    } else {
+        element.style.display = "none";
+        button.style.visibility = "visible"
+    }
+}
+</script>
+
+
+</head>
+<body>
+<div class="wrap">
+    <div align="center">
+        <h1>Random Forest-based pipeline quality</h1>
+    </div>
+
+    <div align="center">
+
+
+<style>
+
+.hist_place {
+
+}
+
+.bar {
+  font-size: 10px;
+}
+
+.bar rect {
+  fill: steelblue;
+  shape-rendering: crispEdges;
+}
+
+.bar text {
+  fill: #fff;
+}
+
+.axis path, .axis line {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
+
+</style>
+<script>
+
+function histogramm(labels, counts, tag) {
+    var values = d3.range(1000).map(d3.random.bates(10));
+
+    var fake = [];
+    var ticks = []
+    var j = 0;
+    for (var i = 0; i < labels.length; i++){
+        ticks[i] = i + 0.25;
+        console.log(parseInt(counts[i]));
+        for (var k = 0; k < parseInt(counts[i]); k++)
+        {
+            fake[j] = i;
+            j++;
+        }
+
+
+    }
+
+    var formatCount = d3.format(",.0f");
+    var margin = {top: 10, right: 30, bottom: 30, left: 30},
+    width = 900 - margin.left - margin.right,
+    height = 300 - margin.top - margin.bottom;
+
+    var x = d3.scale.linear()
+    .domain([0, labels.length])
+    .range([0, width]);
+
+    var data = d3.layout.histogram()
+    .bins(x.ticks(20))
+    (fake);
+
+    var y = d3.scale.linear()
+    .domain([0, d3.max(data, function(d) { return d.y; })])
+    .range([height, 0]);
+
+    var xAxis = d3.svg.axis()
+    .scale(x)
+    .tickValues(ticks)
+    .tickFormat(function(d) { return labels[d-0.25]; })
+    .orient("bottom");
+
+    var svg = d3.select(tag).append("svg")
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom)
+        .append("g")
+        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+    var bar = svg.selectAll(".bar")
+        .data(data)
+        .enter().append("g")
+        .attr("class", "bar")
+        .attr("transform", function(d) { return "translate(" + x(d.x) + "," + y(d.y) + ")"; });
+
+    bar.append("rect")
+        .attr("x", 1)
+        .attr("width", x(data[0].dx) - 1)
+        .attr("height", function(d) { return height - y(d.y); });
+
+    bar.append("text")
+        .attr("dy", ".75em")
+        .attr("y", 6)
+        .attr("x", x(data[0].dx) / 2)
+        .attr("text-anchor", "middle")
+        .text(function(d) { return formatCount(d.y); });
+
+    svg.append("g")
+        .attr("class", "x axis")
+        .attr("transform", "translate(0," + height + ")")
+        .call(xAxis);
+}
+
+</script>
+
+    <table border="1" class="fixed">
+<thead>
+<tr> <th> </th> <th> Date</th> </tr> 
+ </thead>
+<tbody>
+<tr> <th> Date</th> <td> 2016/02/02</td> </tr> 
+<tr> <th> Time</th> <td> 15:09:55</td> </tr> 
+</tbody>
+</table><br>
+<table border="1" class="fixed">
+<thead>
+<tr> <th> </th> <th> NodeClsHiglevel</th> </tr> 
+ </thead>
+<tbody>
+<tr> <th> Model</th> <td> ${SCRIPT_START}/model_compressed100k_64trees_refined_2.binx</td> </tr> 
+<tr> <th> Labels</th> <td> ${SCRIPT_START}/model_compressed100k_64trees_refined_2.binx.labels</td> </tr> 
+</tbody>
+</table><br>
+<table border="1" class="fixed">
+<thead>
+<tr> <th> </th> <th> NodeHandsSegmentation</th> </tr> 
+ </thead>
+<tbody>
+<tr> <th> Hand center model</th> <td> ${SCRIPT_START}/0098_0088_hand_center_all_sleeve_flexx_b002_inf_skel_100kb.binx</td> </tr> 
+<tr> <th> Left-right classifier</th> <td> ${SCRIPT_START}/lr_compressed100k_24trees_refined.binx</td> </tr> 
+</tbody>
+</table><br>
+<table border="1" class="fixed">
+<thead>
+<tr> <th> </th> <th> NodeGestureKeypoints</th> </tr> 
+ </thead>
+<tbody>
+<tr> <th> Models folder</th> <td> ${SCRIPT_START}</td> </tr> 
+<tr> <th> Models config</th> <td> ${SCRIPT_START}/new_keypoint_models_config_compressed.yaml</td> </tr> 
+</tbody>
+</table><br>
+
+<h1>Whole pipeline results</h1>
+
+        <button id="b0" title="Click to show content"type="button" onclick="ShowHide(this.id, 'img_whole_cm_png');" >Confusion matrix</button>
+        <img id="img_whole_cm_png" title=Confusion matrix (click to hide)" align="middle" src=img/whole_cm.png onclick="ShowHide('b0', this.id);" style="display:none;" />
+        <br>
+
+
+        <button id="b1" title="Click to show content"type="button" onclick="ShowHide(this.id, 'img_whole_pr_png');" >Precision recall curves</button>
+        <img id="img_whole_pr_png" title=Precision recall curves (click to hide)" align="middle" src=img/whole_pr.png onclick="ShowHide('b1', this.id);" style="display:none;" />
+        <br>
+
+
+        <h1>Separate parts of pipeline</h1>
+
+        <button id="b2" title="Click to show content"type="button" onclick="ShowHide(this.id, 'img_hand_pose_cm_png');" >Confusion matrix</button>
+        <img id="img_hand_pose_cm_png" title=Confusion matrix (click to hide)" align="middle" src=img/hand_pose_cm.png onclick="ShowHide('b2', this.id);" style="display:none;" />
+        <br>
+
+
+        <button id="b3" title="Click to show content"type="button" onclick="ShowHide(this.id, 'img_hand_pose_pr_png');" >Precision recall curves</button>
+        <img id="img_hand_pose_pr_png" title=Precision recall curves (click to hide)" align="middle" src=img/hand_pose_pr.png onclick="ShowHide('b3', this.id);" style="display:none;" />
+        <br>
+
+
+        <button id="b4" title="Click to show content"type="button" onclick="ShowHide(this.id, 'img_hand_type_cm_png');" >Hand type</button>
+        <img id="img_hand_type_cm_png" title=Hand type (click to hide)" align="middle" src=img/hand_type_cm.png onclick="ShowHide('b4', this.id);" style="display:none;" />
+        <br>
+
+
+
+</div>
+
+</div>
+</body>
+</html>
